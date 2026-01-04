@@ -1,5 +1,7 @@
 package com.ismaildurcan.dto;
 
+import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -7,6 +9,6 @@ public class DtoBase {
 
     private Long id;
 
-    private String createTime;
+    private Date createTime;
 
 }
