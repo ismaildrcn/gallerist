@@ -17,30 +17,41 @@ import com.ismaildurcan.jwt.JWTAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    public static final String REGISTER = "/register";
-    public static final String AUTHENTICATE = "/authenticate";
-    public static final String REFRESH_TOKEN = "/refreshToken";
+        public static final String REGISTER = "/register";
+        public static final String AUTHENTICATE = "/authenticate";
+        public static final String REFRESH_TOKEN = "/refreshToken";
 
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+        public static final String[] SWAGGER_PATHS = {
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs"
+        };
 
-    @Autowired
-    private JWTAuthenticationFilter jwtAuthFilter;
+        @Autowired
+        private AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private AuthEntryPoint authEntryPoint;
+        @Autowired
+        private JWTAuthenticationFilter jwtAuthFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(
-                        request -> request.requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN).permitAll()
-                                .anyRequest().authenticated())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+        @Autowired
+        private AuthEntryPoint authEntryPoint;
+
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http.csrf(csrf -> csrf.disable())
+                                .authorizeHttpRequests(
+                                                request -> request
+                                                                .requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN)
+                                                                .permitAll()
+                                                                .requestMatchers(SWAGGER_PATHS).permitAll()
+                                                                .anyRequest().authenticated())
+                                .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                return http.build();
+        }
 
 }
